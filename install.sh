@@ -8,7 +8,6 @@ sudo apt-get clean -y
 sudo apt-get autoremove -y
 sudo apt --fix-broken install -y
 sudo dpkg --configure -a
-
 sudo apt-get install -f
 sudo apt-get update -y
 sudo apt-get upgrade -y
@@ -20,19 +19,15 @@ wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-2/wkhtm
 sudo apt install ./wkhtmltox_0.12.6.1-2.jammy_amd64.deb -y
 rm wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 sudo apt-get install mariadb-server mariadb-client -y
-
 sudo apt install python3.10-venv -y
 
 # Configure MariaDB
 echo "# Configure MariaDB"
 sudo cp mysql.conf /etc/mysql/my.cnf
 sudo service mariadb restart
-
 sudo mariadb -u root -pfrappe -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY 'frappe' WITH GRANT OPTION;"
 sudo mariadb -u root -pfrappe -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'frappe' WITH GRANT OPTION;"
 sudo mariadb -u root -pfrappe -e "FLUSH PRIVILEGES;"
-
-
 
 sudo apt-get install -y curl
 curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
@@ -44,7 +39,6 @@ sudo npm install -g yarn
 
 chmod -R o+rx /home/vagrant/
 
-## bench init frappe-bench --verbose --frappe-branch version-14 --python /usr/bin/python3.10
 echo "## bench init"
 bench init --verbose --frappe-path https://github.com/frappe/frappe --frappe-branch version-14 --python /usr/bin/python3.10 frappe-bench
 
@@ -52,39 +46,21 @@ bench init --verbose --frappe-path https://github.com/frappe/frappe --frappe-bra
 echo "## Create site and set it as default"
 cd /home/vagrant/frappe-bench
 
-bench new-site site1.local --db-root-password frappe --admin-password admin
+bench new-site site1.localhost --db-root-password frappe --admin-password frappe
 
-bench use site1.local
+bench use site1.localhost
 bench enable-scheduler
-
-## apps
-
-# Install Payments
-echo "# Install Payments"
-bench get-app payments
-bench install-app payments
-./env/bin/pip3 install -e apps/payments/
 
 # pip install cython>=0.29.21,<1.0.0
 ./env/bin/pip3 install cython==0.29.21
 
+## DO NOT INSTALL ANY UNNECESSARY APPS TO AVOID LONG INSTALL TIME
+## apps
 # Install ERPNext
 echo "# Install ERPNext"
 bench get-app erpnext --branch version-14
 bench install-app erpnext
 ./env/bin/pip3 install -e apps/erpnext/
-
-# Install HRMS
-echo "# Install HRMS"
-bench get-app hrms --branch version-14
-bench install-app hrms
-./env/bin/pip3 install -e apps/hrms/
-
-# Install ecommerce_integrations 
-echo "# Install ecommerce_integrations "
-bench get-app ecommerce_integrations --branch main
-bench install-app ecommerce_integrations 
-./env/bin/pip3 install -e apps/ecommerce_integrations/
 
 # Enable developer mode
 echo "# Enable developer mode"
@@ -92,16 +68,11 @@ bench set-config developer_mode 1
 
 # Disable maintenance mode
 echo "# Disable maintenance mode"
-bench --site site1.local set-maintenance-mode off
+bench --site site1.localhost set-maintenance-mode off
 
 # DNS Multi-tenant
 echo "# DNS Multi-tenant"
 bench config dns_multitenant on
-
-# Move apps to shared Vagrant folder
-echo "# Move apps to shared Vagrant folder"
-mv /home/vagrant/frappe-bench/apps /vagrant/
-mkdir -p /home/vagrant/frappe-bench/apps
 
 # Move apps to shared Vagrant folder
 echo "# Move apps to shared Vagrant folder"
