@@ -30,7 +30,7 @@ sudo mariadb -u root -pfrappe -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDEN
 sudo mariadb -u root -pfrappe -e "FLUSH PRIVILEGES;"
 
 sudo apt-get install -y curl
-curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
 cd /home/vagrant/
@@ -40,7 +40,7 @@ sudo npm install -g yarn
 chmod -R o+rx /home/vagrant/
 
 echo "## bench init"
-bench init --verbose --frappe-path https://github.com/frappe/frappe --frappe-branch version-14 --python /usr/bin/python3.10 frappe-bench
+bench init --verbose --frappe-path https://github.com/frappe/frappe --frappe-branch version-15 --python /usr/bin/python3.10 frappe-bench
 
 ## Create site and set it as default
 echo "## Create site and set it as default"
@@ -58,7 +58,7 @@ bench enable-scheduler
 ## apps
 # Install ERPNext
 echo "# Install ERPNext"
-bench get-app erpnext --branch version-14
+bench get-app erpnext --branch version-15
 bench install-app erpnext
 ./env/bin/pip3 install -e apps/erpnext/
 
